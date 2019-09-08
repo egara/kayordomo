@@ -20,6 +20,7 @@
 
 import requests
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 
 # Constants
 SERVER_ADDRESS = '0.0.0.0'
@@ -32,22 +33,44 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
     Class inherited from BaseHTTPRequestHandler (HTTP handler)
     """
+    # Constructor
+    def __init__(self, request, client_address, server):
+        BaseHTTPRequestHandler.__init__(self, request, client_address, server)
+        self.request_id = ''
+        # Switcher to redirect the flow of the application depending on
+        # the entry point of the URL received
+        self.__action_switcher = {
+            'alfaSearch': self.alfaSearch
+        }
+
     def do_GET(self):
         """Initializes the Graphic User Interface.
 
         """
-        # Send response status code
+        # Sending response
+        # Building status code
         self.send_response(STATUS_200)
 
-        # Send headers
-        self.send_header('Content-type','text/html')
+        # Building headers
+        self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        # Send message back to client
-        message = "Hello world!"
+        # Sending message back to client
+        message = "OK"
 
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
+
+        # Getting action
+        action = self.path.replace('/', '')
+        action = action.split('?')[0]
+
+        # Getting parameters
+        query_components = parse_qs(urlparse(self.path).query)
+
+        # Redirecting the action
+        function = self.__action_switcher.get(action, self.alfaSearch())
+        function()
 
         # Test CURL
         print('Executing curl')
@@ -57,6 +80,11 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
         # print(response)
 
         return
+
+    def alfaSearch(self):
+        """Runs a search invoking Kodi Alfa addon.
+
+        """
 
 
 if __name__ == '__main__':
