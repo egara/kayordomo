@@ -19,6 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import requests
+import base64
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -35,16 +36,15 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
     """
     # Constructor
     def __init__(self, request, client_address, server):
-        BaseHTTPRequestHandler.__init__(self, request, client_address, server)
-        self.request_id = ''
         # Switcher to redirect the flow of the application depending on
         # the entry point of the URL received
         self.__action_switcher = {
             'alfaSearch': self.alfaSearch
         }
+        BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
     def do_GET(self):
-        """Initializes the Graphic User Interface.
+        """Receives the request and send a response.
 
         """
         # Sending response
@@ -67,24 +67,57 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
         # Getting parameters
         query_components = parse_qs(urlparse(self.path).query)
+        search_terms = query_components['terms']
 
         # Redirecting the action
-        function = self.__action_switcher.get(action, self.alfaSearch())
-        function()
-
-        # Test CURL
-        print('Executing curl')
-        # headers = {'Content-type': 'application/json',}
-        # data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["ewogICAgImFjdGlvbiI6ICJkb19zZWFyY2giLCAKICAgICJjYXRlZ29yeSI6ICJsb3MgMTAwIiwgCiAgICAiY2hhbm5lbCI6ICJzZWFyY2giLCAKICAgICJjb250ZXh0IjogWwogICAgICAgIHsKICAgICAgICAgICAgImFjdGlvbiI6ICJzZXR0aW5nX2NoYW5uZWwiLCAKICAgICAgICAgICAgImNoYW5uZWwiOiAic2VhcmNoIiwgCiAgICAgICAgICAgICJmcm9tX2FjdGlvbiI6ICJkb19zZWFyY2giLCAKICAgICAgICAgICAgImZyb21fY2hhbm5lbCI6ICJzZWFyY2giLCAKICAgICAgICAgICAgInRpdGxlIjogIkVsZWdpciBjYW5hbGVzIGluY2x1aWRvcyIKICAgICAgICB9LCAKICAgICAgICB7CiAgICAgICAgICAgICJhY3Rpb24iOiAiY2xlYXJfc2F2ZWRfc2VhcmNoZXMiLCAKICAgICAgICAgICAgImNoYW5uZWwiOiAic2VhcmNoIiwgCiAgICAgICAgICAgICJmcm9tX2FjdGlvbiI6ICJkb19zZWFyY2giLCAKICAgICAgICAgICAgImZyb21fY2hhbm5lbCI6ICJzZWFyY2giLCAKICAgICAgICAgICAgInRpdGxlIjogIkJvcnJhciBiXHUwMGZhc3F1ZWRhcyBndWFyZGFkYXMiCiAgICAgICAgfQogICAgXSwgCiAgICAiZXh0cmEiOiAibG9zIDEwMCIsIAogICAgImZhbmFydCI6ICIiLCAKICAgICJpbmZvTGFiZWxzIjoge30sIAogICAgInRodW1ibmFpbCI6ICIvaG9tZS91c2VyLy5rb2RpL2FkZG9ucy9wbHVnaW4udmlkZW8uYWxmYS9yZXNvdXJjZXMvbWVkaWEvdGhlbWVzL2RlZmF1bHQvdGh1bWJfc2VhcmNoLnBuZyIsIAogICAgInRpdGxlIjogIiAgICBcImxvcyAxMDBcIiIsIAogICAgInRvdGFsSXRlbXMiOiAwCn0%3D"]},"id": 2}'
-        # response = requests.post('http://localhost:8080/jsonrpc', headers=headers, data=data)
-        # print(response)
+        function = self.__action_switcher.get(action, self.alfaSearch)
+        function(search_terms[0])
 
         return
 
-    def alfaSearch(self):
+    def alfaSearch(self, search_terms):
         """Runs a search invoking Kodi Alfa addon.
 
+        Arguments:
+            search_terms (string): The terms selected to perform the search using Alfa addon.
         """
+        print("Searching " + search_terms + " in Alpha addon. Please wait...")
+        test = """{
+    "action": "do_search",
+    "category": \"""" + search_terms + """\",
+    "channel": "search",
+    "context": [
+        {
+            "action": "setting_channel",
+            "channel": "search",
+            "from_action": "do_search",
+            "from_channel": "search",
+            "title": "Elegir canales incluidos"
+        },
+        {
+            "action": "clear_saved_searches",
+            "channel": "search",
+            "from_action": "do_search",
+            "from_channel": "search",
+            "title": "Borrar búsquedas guardadas"
+        }
+    ],
+    "extra": \"""" + search_terms + """\",
+    "fanart": "",
+    "infoLabels": {},
+    "thumbnail": "/home/user/.kodi/addons/plugin.video.alfa/resources/media/themes/default/thumb_search.png",
+    "title": \"""" + search_terms + """\",
+    "totalItems": 0
+}"""
+        test_encoded = base64.b64encode(test.encode('utf-8'))
+
+        # Test CURL
+        print('Executing curl')
+        headers = {'Content-type': 'application/json',}
+        data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') +'%3D"]},"id": 2}'
+        print(data)
+        response = requests.post('http://localhost:8080/jsonrpc', headers=headers, data=data)
+        print(response)
 
 
 if __name__ == '__main__':
