@@ -38,7 +38,7 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         # Switcher to redirect the flow of the application depending on
         # the entry point of the URL received
-        self.__action_switcher = {
+        self.__action_dispatcher = {
             'alfaSearch': self.alfaSearch
         }
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
@@ -70,7 +70,7 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
         search_terms = query_components['terms']
 
         # Redirecting the action
-        function = self.__action_switcher.get(action, self.alfaSearch)
+        function = self.__action_dispatcher.get(action, self.alfaSearch)
         function(unquote(search_terms[0]))
 
         return
