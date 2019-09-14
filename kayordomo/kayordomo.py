@@ -21,7 +21,7 @@
 import requests
 import base64
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 
 # Constants
 SERVER_ADDRESS = '0.0.0.0'
@@ -71,7 +71,7 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
         # Redirecting the action
         function = self.__action_switcher.get(action, self.alfaSearch)
-        function(search_terms[0])
+        function(unquote(search_terms[0]))
 
         return
 
@@ -83,33 +83,34 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
         """
         print("Searching " + search_terms + " in Alpha addon. Please wait...")
         test = """{
-    "action": "do_search",
-    "category": \"""" + search_terms + """\",
-    "channel": "search",
+    "action": "do_search", 
+    "category": \"""" + search_terms + """\", 
+    "channel": "search", 
     "context": [
         {
-            "action": "setting_channel",
-            "channel": "search",
-            "from_action": "do_search",
-            "from_channel": "search",
+            "action": "setting_channel", 
+            "channel": "search", 
+            "from_action": "do_search", 
+            "from_channel": "search", 
             "title": "Elegir canales incluidos"
-        },
+        }, 
         {
-            "action": "clear_saved_searches",
-            "channel": "search",
-            "from_action": "do_search",
-            "from_channel": "search",
-            "title": "Borrar búsquedas guardadas"
+            "action": "clear_saved_searches", 
+            "channel": "search", 
+            "from_action": "do_search", 
+            "from_channel": "search", 
+            "title": "Borrar b\u00fasquedas guardadas"
         }
-    ],
-    "extra": \"""" + search_terms + """\",
-    "fanart": "",
-    "infoLabels": {},
-    "thumbnail": "/home/user/.kodi/addons/plugin.video.alfa/resources/media/themes/default/thumb_search.png",
-    "title": \"""" + search_terms + """\",
+    ], 
+    "extra": \"""" + search_terms + """"\", 
+    "fanart": "", 
+    "infoLabels": {}, 
+    "thumbnail": "/home/user/.kodi/addons/plugin.video.alfa/resources/media/themes/default/thumb_search.png", 
+    "title": "    \"""" + search_terms + """"\", 
     "totalItems": 0
 }"""
         test_encoded = base64.b64encode(test.encode('utf-8'))
+        print(test_encoded)
 
         # Test CURL
         print('Executing curl')
