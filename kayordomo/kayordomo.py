@@ -18,8 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import requests
-import base64
+import addon.alfa
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
 
@@ -75,50 +74,15 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
         return
 
+    # noinspection PyMethodMayBeStatic
     def alfaSearch(self, search_terms):
         """Runs a search invoking Kodi Alfa addon.
 
         Arguments:
             search_terms (string): The terms selected to perform the search using Alfa addon.
         """
-        print("Searching " + search_terms + " in Alpha addon. Please wait...")
-        test = """{
-    "action": "do_search", 
-    "category": \"""" + search_terms + """\", 
-    "channel": "search", 
-    "context": [
-        {
-            "action": "setting_channel", 
-            "channel": "search", 
-            "from_action": "do_search", 
-            "from_channel": "search", 
-            "title": "Elegir canales incluidos"
-        }, 
-        {
-            "action": "clear_saved_searches", 
-            "channel": "search", 
-            "from_action": "do_search", 
-            "from_channel": "search", 
-            "title": "Borrar b\u00fasquedas guardadas"
-        }
-    ], 
-    "extra": \"""" + search_terms + """"\", 
-    "fanart": "", 
-    "infoLabels": {}, 
-    "thumbnail": "/home/user/.kodi/addons/plugin.video.alfa/resources/media/themes/default/thumb_search.png", 
-    "title": "    \"""" + search_terms + """"\", 
-    "totalItems": 0
-}"""
-        test_encoded = base64.b64encode(test.encode('utf-8'))
-        print(test_encoded)
-
-        # Test CURL
-        print('Executing curl')
-        headers = {'Content-type': 'application/json',}
-        data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') +'%3D"]},"id": 2}'
-        print(data)
-        response = requests.post('http://localhost:8080/jsonrpc', headers=headers, data=data)
-        print(response)
+        alfa_addon = addon.alfa.AlfaAddon()
+        alfa_addon.search_globally(search_terms)
 
 
 if __name__ == '__main__':
