@@ -84,5 +84,5 @@ class AlfaAddon:
         print('Executing curl')
         headers = {'Content-type': 'application/json', }
         data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') + '%3D"]},"id": 2}'
-        response = requests.post('http://192.168.1.70:8080/jsonrpc', headers=headers, data=data)
+        response = requests.post('http://localhost:8080/jsonrpc', headers=headers, data=data)
         print(response)
