@@ -52,38 +52,37 @@ class AlfaAddon:
         """
         print("Searching " + search_terms + " in Alpha addon. Please wait...")
         test = """{
-            "action": "do_search", 
-            "category": \"""" + search_terms + """\", 
+    "action": "do_search", 
+    "category": \"""" + search_terms + """\", 
+    "channel": "search", 
+    "context": [
+        {
+            "action": "setting_channel", 
             "channel": "search", 
-            "context": [
-                {
-                    "action": "setting_channel", 
-                    "channel": "search", 
-                    "from_action": "do_search", 
-                    "from_channel": "search", 
-                    "title": "Elegir canales incluidos"
-                }, 
-                {
-                    "action": "clear_saved_searches", 
-                    "channel": "search", 
-                    "from_action": "do_search", 
-                    "from_channel": "search", 
-                    "title": "Borrar b\u00fasquedas guardadas"
-                }
-            ], 
-            "extra": \"""" + search_terms + """"\", 
-            "fanart": "", 
-            "infoLabels": {}, 
-            "thumbnail": "/home/user/.kodi/addons/plugin.video.alfa/resources/media/themes/default/thumb_search.png", 
-            "title": "    \"""" + search_terms + """"\", 
-            "totalItems": 0
-        }"""
+            "from_action": "do_search", 
+            "from_channel": "search", 
+            "title": "Elegir canales incluidos"
+        }, 
+        {
+            "action": "clear_saved_searches", 
+            "channel": "search", 
+            "from_action": "do_search", 
+            "from_channel": "search", 
+            "title": "Borrar b\\u00fasquedas guardadas"
+        }
+    ], 
+    "extra": \"""" + search_terms + """\", 
+    "fanart": "", 
+    "infoLabels": {}, 
+    "thumbnail": "/home/user/.kodi/addons/plugin.video.alfa/resources/media/themes/default/thumb_search.png", 
+    "title": "    \\\"""" + search_terms + """\\\"", 
+    "totalItems": 0
+}"""
         test_encoded = base64.b64encode(test.encode('utf-8'))
 
         # Test CURL
         print('Executing curl')
         headers = {'Content-type': 'application/json', }
-        data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": ' \
-               '"plugin.video.alfa","params": ["' + test_encoded.decode('ascii') + '%3D"]},"id": 2}'
-        response = requests.post('http://localhost:8080/jsonrpc', headers=headers, data=data)
+        data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') + '%3D"]},"id": 2}'
+        response = requests.post('http://192.168.1.70:8080/jsonrpc', headers=headers, data=data)
         print(response)
