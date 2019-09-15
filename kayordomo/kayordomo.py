@@ -19,8 +19,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import addon.alfa
+import util.util
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlparse, parse_qs, unquote
+from urllib.parse import urlparse, parse_qs
 
 # Constants
 SERVER_ADDRESS = '0.0.0.0'
@@ -67,10 +68,11 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
         # Getting parameters
         query_components = parse_qs(urlparse(self.path).query)
         search_terms = query_components['terms']
+        sanitized_terms = util.util.sanitize(search_terms[0])
 
         # Redirecting the action
         function = self.__action_dispatcher.get(action, self.alfaSearch)
-        function(unquote(search_terms[0]))
+        function(sanitized_terms)
 
         return
 
