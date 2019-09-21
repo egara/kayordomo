@@ -22,7 +22,9 @@
 
 """
 from urllib.parse import urlparse, parse_qs, unquote
+import os
 import unidecode as unidecode
+import util.settings
 
 
 def sanitize(text):
@@ -39,3 +41,44 @@ def sanitize(text):
     url_decoded_text = unquote(text)
     unaccented_text = unidecode.unidecode(url_decoded_text)
     return unaccented_text
+
+
+class ConfigManager:
+    """Manages the configuration.
+
+    """
+    # Constants
+
+    # Constructor
+    def __init__(self):
+        # Setting global values related to the application
+        # Getting current working directory
+        util.settings.application_path = os.getcwd()
+
+    # noinspection PyMethodMayBeStatic
+    def configure(self):
+        """Configures the application.
+
+        """
+        # Creating a properties manager to manage all the application properties
+        print("Creating PropertiesManager...")
+        util.settings.properties_manager = util.settings.PropertiesManager()
+
+        # Retrieving configuration...
+        print("Retrieving user's configuration from kayordomo.yaml file and loading it in memory...")
+        # Server IP address
+        util.settings.server_ip = util.settings.properties_manager.get_property('server_ip')
+        print("Server IP address: {server_ip}".format(server_ip=util.settings.server_ip))
+
+        # Server port
+        util.settings.server_port = util.settings.properties_manager.get_property('server_port')
+        print("Server port: {server_port}".format(server_port=util.settings.server_port))
+
+        # Kodi IP address
+        util.settings.kodi_ip = util.settings.properties_manager.get_property('kodi_ip')
+        print("Server IP address: {kodi_ip}".format(kodi_ip=util.settings.kodi_ip))
+
+        # Server port
+        util.settings.kodi_port = util.settings.properties_manager.get_property('kodi_port')
+        print("Server port: {kodi_port}".format(kodi_port=util.settings.kodi_port))
+

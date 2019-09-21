@@ -21,15 +21,13 @@
 """This module gathers all the global attributes, methods and classes needed for managing Kodi alfa addon.
 
 """
-import requests
 import base64
+import requests
+import util.settings
 
 # Global module constants
-CONF_FILE = "buttermanager.yaml"
 
 # Global module attributes
-# Application version
-application_version = ""
 
 
 class AlfaAddon:
@@ -81,9 +79,10 @@ class AlfaAddon:
         test_encoded = base64.b64encode(test.encode('utf-8'))
 
         # Test CURL
-        print('Executing curl')
+        print("Executing curl")
         headers = {'Content-type': 'application/json', }
         data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') + '%3D"]},"id": 2}'
         print(data)
-        response = requests.post('http://localhost:8080/jsonrpc', headers=headers, data=data)
+        response = requests.post("http://{kodi_address}:{kodi_port}/jsonrpc".format(
+            kodi_address=util.settings.kodi_address,kodi_port=util.settings.kodi_port), headers=headers, data=data)
         print(response)

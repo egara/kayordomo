@@ -18,14 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import addon.alfa
-import util.util
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
+import addon.alfa
+import util.settings
+import util.util
 
 # Constants
-SERVER_ADDRESS = '0.0.0.0'
-SERVER_PORT = 8083
 STATUS_200 = 200
 
 
@@ -41,6 +40,7 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
         self.__action_dispatcher = {
             'alfaSearch': self.alfaSearch
         }
+
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
     def do_GET(self):
@@ -88,11 +88,17 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    print('Starting server...')
+    # Configuring the application
+    print("Configuring Kayordomo. Please wait...")
+    kayordomo_configurator = util.util.ConfigManager()
+    kayordomo_configurator.configure()
+
+    print("Starting server...")
 
     # Setting server
-    server_address = (SERVER_ADDRESS, SERVER_PORT)
+    server_address = (util.settings.server_ip, util.settings.server_port)
     httpd = HTTPServer(server_address, KayordomoRequestHandler)
-    print('Running server...')
+    print("Running server on {server_ip} and port {server_port}".format(server_ip=util.settings.server_ip,
+                                                                        server_port=util.settings.server_port))
     # Running server
     httpd.serve_forever()
