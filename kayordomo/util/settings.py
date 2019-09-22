@@ -75,7 +75,7 @@ class PropertiesManager:
         # Setting global values related to the application
         self.__conf_file_path = '{application_path}/{conf_file}'.format(application_path=application_path,
                                                                         conf_file=CONF_FILE)
-        self.__logger.log("Configuration file should be located at {conf_file_path}".format(
+        self.__logger.info("Configuration file should be located at {conf_file_path}".format(
             conf_file_path=self.__conf_file_path))
         print("Configuration file should be located at {conf_file_path}".format(conf_file_path=self.__conf_file_path))
 
