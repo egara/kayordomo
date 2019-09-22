@@ -101,7 +101,7 @@ if __name__ == '__main__':
     print("Starting server...")
 
     # Setting server
-    server_address = (util.settings.server_ip, util.settings.server_port)
+    server_address = (util.settings.server_ip, int(util.settings.server_port))
     httpd = HTTPServer(server_address, KayordomoRequestHandler)
 
     print("Running server on {server_ip} and port {server_port}".format(server_ip=util.settings.server_ip,
