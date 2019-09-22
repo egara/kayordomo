@@ -94,8 +94,9 @@ class AlfaAddon:
         # Flushing stdout in order to display the messages on systemd journal
         sys.stdout.flush()
 
-        response = requests.post("http://{kodi_address}:{kodi_port}/jsonrpc".format(
-            kodi_address=util.settings.kodi_address,kodi_port=util.settings.kodi_port), headers=headers, data=data)
+        kodi_url = "http://{kodi_ip}:{kodi_port}/jsonrpc".format(kodi_ip=util.settings.kodi_ip,
+                                                                 kodi_port=util.settings.kodi_port)
+        response = requests.post(kodi_url, headers=headers, data=data)
 
         print(response)
         # Flushing stdout in order to display the messages on systemd journal

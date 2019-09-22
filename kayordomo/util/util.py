@@ -87,12 +87,12 @@ class ConfigManager:
 
         # Kodi IP address
         util.settings.kodi_ip = util.settings.properties_manager.get_property('kodi_ip')
-        print("Server IP address: {kodi_ip}".format(kodi_ip=util.settings.kodi_ip))
+        print("Kodi IP address: {kodi_ip}".format(kodi_ip=util.settings.kodi_ip))
         # Flushing stdout in order to display the messages on systemd journal
         sys.stdout.flush()
 
         # Server port
         util.settings.kodi_port = util.settings.properties_manager.get_property('kodi_port')
-        print("Server port: {kodi_port}".format(kodi_port=util.settings.kodi_port))
+        print("Kodi port: {kodi_port}".format(kodi_port=util.settings.kodi_port))
         # Flushing stdout in order to display the messages on systemd journal
         sys.stdout.flush()

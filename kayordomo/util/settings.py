@@ -36,7 +36,7 @@ server_ip = ""
 # Server port
 server_port = ""
 # Kodi address
-kodi_address = ""
+kodi_ip = ""
 # Kodi port
 kodi_port = ""
 # Properties Manager
