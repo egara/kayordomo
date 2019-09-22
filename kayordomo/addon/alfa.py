@@ -21,9 +21,10 @@
 """This module gathers all the global attributes, methods and classes needed for managing Kodi alfa addon.
 
 """
+from systemd.journal import JournaldLogHandler
 import base64
+import logging
 import requests
-import sys
 import util.settings
 
 # Global module constants
@@ -37,9 +38,22 @@ class AlfaAddon:
     """
     # Constructor
     def __init__(self):
-        # Logger
-        pass
-        # self.__logger = util.utils.Logger(self.__class__.__name__).get()
+        # Getting an instance of the logger object this module will use
+        self.__logger = logging.getLogger(self.__class__.__name__)
+
+        # Instantiating the JournaldLogHandler to hook into systemd
+        journald_handler = JournaldLogHandler()
+
+        # Setting a formatter to include the level name
+        journald_handler.setFormatter(logging.Formatter(
+            '[%(levelname)s] %(message)s'
+        ))
+
+        # Adding the journald handler to the current logger
+        self.__logger.addHandler(journald_handler)
+
+        # Setting the logging level
+        self.__logger.setLevel(logging.INFO)
 
     # noinspection PyMethodMayBeStatic
     def search_globally(self, search_terms):
@@ -49,9 +63,8 @@ class AlfaAddon:
             search_terms (string): terms used for performing the search.
 
         """
+        self.__logger.info("Searching " + search_terms + " in Alpha addon. Please wait...")
         print("Searching " + search_terms + " in Alpha addon. Please wait...")
-        # Flushing stdout in order to display the messages on systemd journal
-        sys.stdout.flush()
 
         test = """{
     "action": "do_search", 
@@ -83,21 +96,18 @@ class AlfaAddon:
         test_encoded = base64.b64encode(test.encode('utf-8'))
 
         # Test CURL
+        self.__logger.info("Executing curl")
         print("Executing curl")
-        # Flushing stdout in order to display the messages on systemd journal
-        sys.stdout.flush()
 
         headers = {'Content-type': 'application/json', }
         data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') + '%3D"]},"id": 2}'
 
+        self.__logger.info(data)
         print(data)
-        # Flushing stdout in order to display the messages on systemd journal
-        sys.stdout.flush()
 
         kodi_url = "http://{kodi_ip}:{kodi_port}/jsonrpc".format(kodi_ip=util.settings.kodi_ip,
                                                                  kodi_port=util.settings.kodi_port)
         response = requests.post(kodi_url, headers=headers, data=data)
 
+        self.__logger.info(response)
         print(response)
-        # Flushing stdout in order to display the messages on systemd journal
-        sys.stdout.flush()

@@ -21,9 +21,10 @@
 """This module gathers all the global attributes, methods and classes needed for application settings.
 
 """
-import yaml
+from systemd.journal import JournaldLogHandler
+import logging
 import os
-import sys
+import yaml
 
 # Global module constants
 CONF_FILE = "kayordomo.yaml"
@@ -54,12 +55,29 @@ class PropertiesManager:
     """
     # Constructor
     def __init__(self):
+        # Getting an instance of the logger object this module will use
+        self.__logger = logging.getLogger(self.__class__.__name__)
+
+        # Instantiating the JournaldLogHandler to hook into systemd
+        journald_handler = JournaldLogHandler()
+
+        # Setting a formatter to include the level name
+        journald_handler.setFormatter(logging.Formatter(
+            '[%(levelname)s] %(message)s'
+        ))
+
+        # Adding the journald handler to the current logger
+        self.__logger.addHandler(journald_handler)
+
+        # Setting the logging level
+        self.__logger.setLevel(logging.INFO)
+
         # Setting global values related to the application
         self.__conf_file_path = '{application_path}/{conf_file}'.format(application_path=application_path,
                                                                         conf_file=CONF_FILE)
+        self.__logger.log("Configuration file should be located at {conf_file_path}".format(
+            conf_file_path=self.__conf_file_path))
         print("Configuration file should be located at {conf_file_path}".format(conf_file_path=self.__conf_file_path))
-        # Flushing stdout in order to display the messages on systemd journal
-        sys.stdout.flush()
 
         self.__user_settings = []
         # Reading configuration file (kayordomo.yaml)
@@ -69,9 +87,8 @@ class PropertiesManager:
 
             conf_file.close()
         else:
+            self.__logger.info("Warning: There is no configuration file...")
             print("Warning: There is no configuration file...")
-            # Flushing stdout in order to display the messages on systemd journal
-            sys.stdout.flush()
 
     def get_property(self, kayordomo_property):
         """Gets the value of a property.

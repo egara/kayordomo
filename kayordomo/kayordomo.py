@@ -25,7 +25,6 @@ import addon.alfa
 import logging
 import util.settings
 import util.util
-import sys
 
 # Constants
 STATUS_200 = 200
@@ -111,22 +110,21 @@ if __name__ == '__main__':
     # Configuring the application
     logger.info("Configuring Kayordomo. Please wait...")
     print("Configuring Kayordomo. Please wait...")
-    # Flushing stdout in order to display the messages on systemd journal
-    sys.stdout.flush()
 
     kayordomo_configurator = util.util.ConfigManager()
     kayordomo_configurator.configure()
 
+    logger.info("Starting server...")
     print("Starting server...")
 
     # Setting server
     server_address = (util.settings.server_ip, int(util.settings.server_port))
     httpd = HTTPServer(server_address, KayordomoRequestHandler)
 
+    logger.info("Running server on {server_ip} and port {server_port}".format(server_ip=util.settings.server_ip,
+                                                                              server_port=util.settings.server_port))
     print("Running server on {server_ip} and port {server_port}".format(server_ip=util.settings.server_ip,
                                                                         server_port=util.settings.server_port))
-    # Flushing stdout in order to display the messages on systemd journal
-    sys.stdout.flush()
 
     # Running server
     httpd.serve_forever()
