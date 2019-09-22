@@ -17,7 +17,8 @@ setuptools.setup(
     install_requires=[
         'unidecode>=1.1.1',
         'requests>=2.22.0',
-        'PyYAML>=4.2b1'
+        'PyYAML>=4.2b1',
+        'systemd>=0.10'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

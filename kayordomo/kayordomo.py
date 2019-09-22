@@ -19,8 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from systemd.journal import JournaldLogHandler
 from urllib.parse import urlparse, parse_qs
 import addon.alfa
+import logging
 import util.settings
 import util.util
 import sys
@@ -89,8 +91,25 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    # Configuring the application
+    # Get an instance of the logger object this module will use
+    logger = logging.getLogger(__name__)
 
+    # instantiate the JournaldLogHandler to hook into systemd
+    journald_handler = JournaldLogHandler()
+
+    # set a formatter to include the level name
+    journald_handler.setFormatter(logging.Formatter(
+        '[%(levelname)s] %(message)s'
+    ))
+
+    # add the journald handler to the current logger
+    logger.addHandler(journald_handler)
+
+    # optionally set the logging level
+    logger.setLevel(logging.INFO)
+
+    # Configuring the application
+    logger.info("Configuring Kayordomo. Please wait...")
     print("Configuring Kayordomo. Please wait...")
     # Flushing stdout in order to display the messages on systemd journal
     sys.stdout.flush()
