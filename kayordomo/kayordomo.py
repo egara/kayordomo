@@ -23,6 +23,7 @@ from urllib.parse import urlparse, parse_qs
 import addon.alfa
 import util.settings
 import util.util
+import sys
 
 # Constants
 STATUS_200 = 200
@@ -89,7 +90,11 @@ class KayordomoRequestHandler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     # Configuring the application
+
     print("Configuring Kayordomo. Please wait...")
+    # Flushing stdout in order to display the messages on systemd journal
+    sys.stdout.flush()
+
     kayordomo_configurator = util.util.ConfigManager()
     kayordomo_configurator.configure()
 
@@ -98,7 +103,11 @@ if __name__ == '__main__':
     # Setting server
     server_address = (util.settings.server_ip, util.settings.server_port)
     httpd = HTTPServer(server_address, KayordomoRequestHandler)
+
     print("Running server on {server_ip} and port {server_port}".format(server_ip=util.settings.server_ip,
                                                                         server_port=util.settings.server_port))
+    # Flushing stdout in order to display the messages on systemd journal
+    sys.stdout.flush()
+
     # Running server
     httpd.serve_forever()

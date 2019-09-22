@@ -23,6 +23,7 @@
 """
 import base64
 import requests
+import sys
 import util.settings
 
 # Global module constants
@@ -49,6 +50,9 @@ class AlfaAddon:
 
         """
         print("Searching " + search_terms + " in Alpha addon. Please wait...")
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
+
         test = """{
     "action": "do_search", 
     "category": \"""" + search_terms + """\", 
@@ -80,9 +84,19 @@ class AlfaAddon:
 
         # Test CURL
         print("Executing curl")
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
+
         headers = {'Content-type': 'application/json', }
         data = '{"jsonrpc": "2.0","method": "Addons.ExecuteAddon","params": {"wait": false,"addonid": "plugin.video.alfa","params": ["' + test_encoded.decode('ascii') + '%3D"]},"id": 2}'
+
         print(data)
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
+
         response = requests.post("http://{kodi_address}:{kodi_port}/jsonrpc".format(
             kodi_address=util.settings.kodi_address,kodi_port=util.settings.kodi_port), headers=headers, data=data)
+
         print(response)
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()

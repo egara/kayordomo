@@ -23,6 +23,7 @@
 """
 from urllib.parse import urlparse, parse_qs, unquote
 import os
+import sys
 import unidecode as unidecode
 import util.settings
 
@@ -62,23 +63,36 @@ class ConfigManager:
         """
         # Creating a properties manager to manage all the application properties
         print("Creating PropertiesManager...")
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
+
         util.settings.properties_manager = util.settings.PropertiesManager()
 
         # Retrieving configuration...
         print("Retrieving user's configuration from kayordomo.yaml file and loading it in memory...")
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
+
         # Server IP address
         util.settings.server_ip = util.settings.properties_manager.get_property('server_ip')
         print("Server IP address: {server_ip}".format(server_ip=util.settings.server_ip))
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
 
         # Server port
         util.settings.server_port = util.settings.properties_manager.get_property('server_port')
         print("Server port: {server_port}".format(server_port=util.settings.server_port))
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
 
         # Kodi IP address
         util.settings.kodi_ip = util.settings.properties_manager.get_property('kodi_ip')
         print("Server IP address: {kodi_ip}".format(kodi_ip=util.settings.kodi_ip))
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
 
         # Server port
         util.settings.kodi_port = util.settings.properties_manager.get_property('kodi_port')
         print("Server port: {kodi_port}".format(kodi_port=util.settings.kodi_port))
-
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()

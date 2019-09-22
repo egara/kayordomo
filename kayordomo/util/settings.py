@@ -4,7 +4,7 @@
 #
 # Copyright 2018-2019 Eloy García Almadén <eloy.garcia.pca@gmail.com>
 #
-# This file is part of buttermanager.
+# This file is part of kayordomo.
 #
 # This program is free software: you can redistribute it and / or modify it
 # under the terms of the GNU General Public License as published by the
@@ -21,8 +21,9 @@
 """This module gathers all the global attributes, methods and classes needed for application settings.
 
 """
-import os
 import yaml
+import os
+import sys
 
 # Global module constants
 CONF_FILE = "kayordomo.yaml"
@@ -57,6 +58,8 @@ class PropertiesManager:
         self.__conf_file_path = '{application_path}/{conf_file}'.format(application_path=application_path,
                                                                         conf_file=CONF_FILE)
         print("Configuration file should be located at {conf_file_path}".format(conf_file_path=self.__conf_file_path))
+        # Flushing stdout in order to display the messages on systemd journal
+        sys.stdout.flush()
 
         self.__user_settings = []
         # Reading configuration file (kayordomo.yaml)
@@ -67,6 +70,8 @@ class PropertiesManager:
             conf_file.close()
         else:
             print("Warning: There is no configuration file...")
+            # Flushing stdout in order to display the messages on systemd journal
+            sys.stdout.flush()
 
     def get_property(self, kayordomo_property):
         """Gets the value of a property.
